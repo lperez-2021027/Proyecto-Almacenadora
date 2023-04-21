@@ -1,4 +1,4 @@
-export const AgregarTareaForm = ( props ) => {
+export const AgregarTareaForm = (props) => {
 
     const borrarCamposFormulario = () => {
         props.setNombreTarea("");
@@ -9,15 +9,23 @@ export const AgregarTareaForm = ( props ) => {
     };
 
     const enviarFormulario = (event) => {
+        
         event.preventDefault();
+
+        if (!props.nombreTarea || !props.descripcionTarea || 
+            !props.fechaInicio || !props.fechaCierre || 
+            !props.creadorTarea) {
+            return;
+        }
+
         const tarea = {
             nombre: props.nombreTarea,
             descripcion: props.descripcionTarea,
             fechaInicio: props.fechaInicio,
             fechaCierre: props.fechaCierre,
-            creador: props.creadorTarea,
-            estado: "en-progreso",
+            creador: props.creadorTarea
         };
+        
         if (props.editandoTarea !== null) {
             const nuevasTareas = [...props.tareas];
             nuevasTareas[props.editandoTarea] = tarea;
@@ -26,6 +34,7 @@ export const AgregarTareaForm = ( props ) => {
         } else {
             props.setTareas([...props.tareas, tarea]);
         }
+        
         event.target.reset();
         borrarCamposFormulario()
     };

@@ -11,10 +11,19 @@ export const ListaTareas = () => {
     const [fechaInicio, setFechaInicio] = useState("");
     const [fechaCierre, setFechaCierre] = useState("");
     const [creadorTarea, setCreadorTarea] = useState("");
-    const [isChecked, setIsChecked] = useState(false);
 
-    const handleCheckboxChange = (event) => {
-        setIsChecked(event.target.checked);
+    const handleCheckboxChange = (event, index) => {
+        const newTareas = [...tareas];
+        newTareas[index].isChecked = event.target.checked;
+        setTareas(newTareas);
+    };
+
+    const borrarCamposFormulario = () => {
+        setNombreTarea("");
+        setDescripcionTarea("");
+        setFechaInicio("");
+        setFechaCierre("");
+        setCreadorTarea("");
     };
 
     const eliminarTarea = (index) => {
@@ -24,14 +33,7 @@ export const ListaTareas = () => {
         }
         nuevasTareas.splice(index, 1);
         setTareas(nuevasTareas);
-        const a = document.getElementById("flexCheckDefault")
-        console.log(a.value);
-
     };
-
-    // let textSuccess = {
-    //     textDecoration: 'line-through'
-    // }
 
     useEffect(() => {
         const tareasGuardadas = localStorage.getItem("tareas");
@@ -56,6 +58,7 @@ export const ListaTareas = () => {
 
                                     <h4 className="text-center my-3 pb-3">Lista de tareas</h4>
 
+                                    {/* ------------------- FORMULARIO -------------------*/}
                                     <AgregarTareaForm
                                         tareas={tareas}
                                         setTareas={setTareas}
@@ -91,23 +94,24 @@ export const ListaTareas = () => {
                                             <tbody>
                                                 {tareas.map((tarea, index) => (
                                                     <tr key={index}>
+
                                                         <th scope="row">{index + 1}</th>
-                                                        <td className={isChecked ? "completed" : ""} >
+                                                        <td className={tarea.isChecked ? "completed" : ""}>
                                                             {tarea.nombre}
                                                         </td>
-                                                        <td className={isChecked ? "completed" : ""} >{
-                                                            tarea.descripcion}
+                                                        <td className={tarea.isChecked ? "completed" : ""}>
+                                                            {tarea.descripcion}
                                                         </td>
-                                                        <td className={isChecked ? "completed" : ""} >
+                                                        <td className={tarea.isChecked ? "completed" : ""}>
                                                             {tarea.fechaInicio}
                                                         </td>
-                                                        <td className={isChecked ? "completed" : ""} >
+                                                        <td className={tarea.isChecked ? "completed" : ""}>
                                                             {tarea.fechaCierre}
                                                         </td>
-                                                        <td className={isChecked ? "completed" : ""} >
+                                                        <td className={tarea.isChecked ? "completed" : ""}>
                                                             {tarea.creador}
                                                         </td>
-                                                        {/* style={textSuccess} */}
+
                                                         <td className="">
                                                             <div className="text-center">
 
@@ -116,27 +120,36 @@ export const ListaTareas = () => {
                                                                 </button>
 
                                                                 <button type="button" className="btn btn-success m-1" onClick={() => {
-                                                                    setNombreTarea(tarea.nombre);
-                                                                    setDescripcionTarea(tarea.descripcion);
-                                                                    setFechaInicio(tarea.fechaInicio);
-                                                                    setFechaCierre(tarea.fechaCierre);
-                                                                    setCreadorTarea(tarea.creador);
-                                                                    setEditandoTarea(index);
+                                                                    if (editandoTarea === index) {
+                                                                        setEditandoTarea(null);
+                                                                        borrarCamposFormulario();
+                                                                    } else {
+                                                                        setNombreTarea(tarea.nombre);
+                                                                        setDescripcionTarea(tarea.descripcion);
+                                                                        setFechaInicio(tarea.fechaInicio);
+                                                                        setFechaCierre(tarea.fechaCierre);
+                                                                        setCreadorTarea(tarea.creador);
+                                                                        setEditandoTarea(index);
+                                                                    }
                                                                 }}>
-                                                                    Editar
+                                                                    {editandoTarea === index ? "Cancelar" : "Editar"}
                                                                 </button>
 
                                                             </div>
                                                             <div className="form-check ">
 
-                                                                <input className="form-check-input" type="checkbox"
-                                                                    onChange={handleCheckboxChange} checked={isChecked}
-                                                                    id="flexCheckDefault" />
+                                                                <input
+                                                                    className="form-check-input"
+                                                                    type="checkbox"
+                                                                    onChange={(event) => handleCheckboxChange(event, index)}
+                                                                    checked={tarea.isChecked || false}
+                                                                    id={`flexCheckDefault${index}`}
+                                                                />
 
                                                                 <label className="form-check-label " >
                                                                     Tarea realizada
                                                                 </label>
-                                                                
+
                                                             </div>
 
                                                         </td>
